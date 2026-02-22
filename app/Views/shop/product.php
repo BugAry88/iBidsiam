@@ -181,6 +181,84 @@
     color: var(--warning-color);
 }
 
+.pd-status.special-pre-order {
+    background: rgba(255, 107, 107, 0.15);
+    color: #ff6b6b;
+}
+
+.pd-status.available-order {
+    background: rgba(23, 162, 184, 0.1);
+    color: #17a2b8;
+}
+
+/* Status Description */
+.pd-status-description {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    border-left: 4px solid var(--accent-gold);
+    padding: 15px 20px;
+    margin-top: 15px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.pd-status-description i {
+    color: var(--accent-gold);
+    margin-top: 2px;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+/* Status-specific description colors */
+.pd-status.in-stock + .pd-status-description {
+    border-left-color: #28a745;
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05));
+}
+
+.pd-status.in-stock + .pd-status-description i {
+    color: #28a745;
+}
+
+.pd-status.out-of-stock + .pd-status-description {
+    border-left-color: #dc3545;
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.05));
+}
+
+.pd-status.out-of-stock + .pd-status-description i {
+    color: #dc3545;
+}
+
+.pd-status.pre-order + .pd-status-description {
+    border-left-color: #ffc107;
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05));
+}
+
+.pd-status.pre-order + .pd-status-description i {
+    color: #ffc107;
+}
+
+.pd-status.special-pre-order + .pd-status-description {
+    border-left-color: #ff6b6b;
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 142, 83, 0.1));
+}
+
+.pd-status.special-pre-order + .pd-status-description i {
+    color: #ff6b6b;
+}
+
+.pd-status.available-order + .pd-status-description {
+    border-left-color: #17a2b8;
+    background: linear-gradient(135deg, rgba(23, 162, 184, 0.1), rgba(23, 162, 184, 0.05));
+}
+
+.pd-status.available-order + .pd-status-description i {
+    color: #17a2b8;
+}
+
 /* Vinyl Specific Info */
 .pd-vinyl-info {
     background: var(--sidebar-bg);
@@ -576,21 +654,30 @@
                 <?php
                 $statusClass = 'in-stock';
                 $statusText = 'In Stock';
+                $statusDescription = 'พร้อมส่งทันที! สินค้ามีในสต็อก จัดส่งภายใน 1-2 วันทำการ';
+                
                 if ($product['status'] == 'out_of_stock' || $product['quantity'] < 1) {
                     $statusClass = 'out-of-stock';
                     $statusText = 'Out of Stock';
+                    $statusDescription = 'ขออภัย สินค้าหมดชั่วคราว กรุณาติดต่อสอบถามเพื่อรอสินค้ารอบถัดไป';
                 } elseif ($product['status'] == 'pre_order') {
                     $statusClass = 'pre-order';
                     $statusText = 'Pre-Order';
+                    $statusDescription = 'รับจองล่วงหน้า! สินค้าจะพร้อมส่งภายใน 14-30 วัน จองเลยเพื่อไม่พลาดสินค้าชิ้นนี้';
                 } elseif ($product['status'] == 'special_pre_order') {
                     $statusClass = 'special-pre-order';
                     $statusText = 'Special Pre-Order Price';
+                    $statusDescription = '🔥 ราคาพิเศษสำหรับการจองล่วงหน้า! ประหยัดกว่าปกติ จำกัดจำนวน รีบจองด่วน!';
                 } elseif ($product['status'] == 'available_order') {
                     $statusClass = 'available-order';
                     $statusText = 'Available For Order';
+                    $statusDescription = 'พร้อมสั่งได้! สินค้าจะจัดหามาให้ภายใน 7-14 วันทำการ รับประกันของแท้ 100%';
                 }
                 ?>
                 <div class="pd-status <?= $statusClass ?>"><?= $statusText ?></div>
+                <div class="pd-status-description">
+                    <i class="fas fa-info-circle"></i> <?= $statusDescription ?>
+                </div>
             </div>
 
             <!-- Vinyl Specific Information -->
