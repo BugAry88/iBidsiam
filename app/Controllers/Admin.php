@@ -234,6 +234,29 @@ class Admin extends BaseController
         if ($orderId && $status) {
             $orderModel = new OrderModel();
             $orderModel->update($orderId, ['status' => $status]);
+            
+            // Send email notification to customer about status update
+            try {
+                $emailService = new \App\Libraries\EmailService();
+                $order = $orderModel->select('orders.*, users.email as customer_email')
+                                    ->join('users', 'users.id = orders.user_id', 'left')
+                                    ->find($orderId);
+                
+                if ($order) {
+                    $orderItemModel = new \App\Models\OrderItemModel();
+                    $items = $orderItemModel->where('order_id', $orderId)->findAll();
+                    
+                    // Get customer email from order or users table
+                    $customerEmail = $order['customer_email'] ?? null;
+                    
+                    if ($customerEmail) {
+                        $emailService->sendCustomerOrderStatusUpdate($order, $items, $customerEmail, $status);
+                    }
+                }
+            } catch (\Exception $e) {
+                log_message('error', 'Status update email failed: ' . $e->getMessage());
+            }
+            
             return redirect()->to('admin/order/' . $orderId)->with('success', 'อัปเดตสถานะเรียบร้อยแล้ว');
         }
 
@@ -451,5 +474,53 @@ class Admin extends BaseController
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
         }
+    }
+
+    public function emailLogs()
+    {
+        if (!session()->get('is_admin')) return redirect()->to('admin/login');
+
+        $db = \Config\Database::connect();
+        
+        // Check if email_logs table exists
+        if (!$db->tableExists('email_logs')) {
+            return redirect()->to('admin/email-settings')->with('error', 'ตาราง email_logs ยังไม่ถูกสร้าง');
+        }
+
+        $builder = $db->table('email_logs');
+        
+        // Apply filters
+        $filterStatus = $this->request->getGet('status');
+        $filterDate = $this->request->getGet('date');
+        
+        if ($filterStatus) {
+            $builder->where('status', $filterStatus);
+        }
+        
+        if ($filterDate) {
+            $builder->where('DATE(sent_at)', $filterDate);
+        }
+        
+        // Get stats
+        $stats = [
+            'total' => $db->table('email_logs')->countAllResults(),
+            'sent' => $db->table('email_logs')->where('status', 'sent')->countAllResults(),
+            'failed' => $db->table('email_logs')->where('status', 'failed')->countAllResults()
+        ];
+        
+        // Get logs with pagination
+        $perPage = 20;
+        $logs = $builder->orderBy('id', 'DESC')->paginate($perPage);
+        $pager = $builder->pager;
+        
+        $data = [
+            'logs' => $logs,
+            'pager' => $pager,
+            'stats' => $stats,
+            'filter_status' => $filterStatus,
+            'filter_date' => $filterDate
+        ];
+        
+        return view('admin/email_logs', $data);
     }
 }

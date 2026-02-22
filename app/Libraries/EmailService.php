@@ -144,11 +144,13 @@ class EmailService
         try {
             $builder = $this->db->table('email_logs');
             $builder->insert([
-                'to_email' => $to,
+                'recipient' => $to,
                 'subject' => $subject,
                 'template' => $template,
                 'status' => $status ? 'sent' : 'failed',
-                'sent_at' => date('Y-m-d H:i:s')
+                'error_message' => $status ? null : $this->email->printDebugger(['headers']),
+                'sent_at' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H:i:s')
             ]);
         } catch (\Exception $e) {
             // If email_logs table doesn't exist, skip logging

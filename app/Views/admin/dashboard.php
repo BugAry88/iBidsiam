@@ -728,6 +728,12 @@
                     <span>Email Settings</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="<?= site_url('admin/email-logs') ?>">
+                    <i class="fas fa-history"></i>
+                    <span>Email Logs</span>
+                </a>
+            </li>
         </ul>
         <div style="padding: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
             <div class="user-info">

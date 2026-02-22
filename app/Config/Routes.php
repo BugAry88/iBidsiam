@@ -54,10 +54,14 @@ $routes->group('admin', function($routes) {
     $routes->get('email-settings', 'Admin::emailSettings');
     $routes->post('email-settings/update', 'Admin::updateEmailSettings');
     $routes->post('email-settings/test', 'Admin::testEmail');
+    $routes->get('email-logs', 'Admin::emailLogs');
 
     $routes->get('setup', 'Admin::setup');
     $routes->get('setup_items', 'Admin::setup_items');
 });
+
+// Cron Jobs Routes
+$routes->get('cron/check-low-stock', 'Cron::checkLowStock');
 
 // Cart AJAX Routes (Global)
 $routes->post('cart/add', 'Cart::add');

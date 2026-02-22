@@ -216,6 +216,40 @@ class Shop extends BaseController
                 ]);
             }
 
+            // Update product quantities and check stock
+            $productModel = new ProductModel();
+            foreach ($cart as $item) {
+                $product = $productModel->find($item['id']);
+                if ($product) {
+                    $newQuantity = $product['quantity'] - $item['quantity'];
+                    $productModel->update($item['id'], ['quantity' => $newQuantity]);
+                    
+                    // Check if stock is low after order
+                    if ($newQuantity <= 5 && $newQuantity > 0) {
+                        $cronController = new \App\Controllers\Cron();
+                        $cronController->checkStockAfterOrder($item['id']);
+                    }
+                }
+            }
+            
+            // Send email notifications
+            try {
+                $emailService = new \App\Libraries\EmailService();
+                $order = $orderModel->find($orderId);
+                $items = $orderItemModel->where('order_id', $orderId)->findAll();
+                
+                // Send admin notification
+                $emailService->sendAdminNewOrderNotification($order, $items);
+                
+                // Send customer confirmation
+                $customerEmail = $this->request->getPost('customer_email');
+                if ($customerEmail) {
+                    $emailService->sendCustomerOrderConfirmation($order, $items, $customerEmail);
+                }
+            } catch (\Exception $e) {
+                log_message('error', 'Email notification failed: ' . $e->getMessage());
+            }
+
             $session->remove('cart');
             return redirect()->to("thankyou/{$orderId}");
         } else {
@@ -270,8 +304,27 @@ class Shop extends BaseController
             $model->update($orderId, [
                 'payment_proof' => 'uploads/payment_proofs/' . $newName,
                 'payment_date'  => $paymentDate,
-                'status'        => 'paid' // Or 'awaiting_verification' if you prefer
+                'status'        => 'paid'
             ]);
+
+            // Send payment notification emails
+            try {
+                $emailService = new \App\Libraries\EmailService();
+                $order = $model->find($orderId);
+                
+                // Send admin payment notification
+                $emailService->sendAdminPaymentNotification($order, $amount, $paymentDate);
+                
+                // Send customer payment confirmation
+                $orderItemModel = new OrderItemModel();
+                $items = $orderItemModel->where('order_id', $orderId)->findAll();
+                $customerEmail = $this->request->getPost('customer_email');
+                if ($customerEmail) {
+                    $emailService->sendCustomerOrderStatusUpdate($order, $items, $customerEmail, 'paid');
+                }
+            } catch (\Exception $e) {
+                log_message('error', 'Payment email notification failed: ' . $e->getMessage());
+            }
 
             return redirect()->to("thankyou/{$orderId}")->with('success', 'แจ้งชำระเงินเรียบร้อยแล้ว');
         } else {
