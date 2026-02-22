@@ -39,7 +39,7 @@
         }
         h2 { margin-top: 0; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
         label { display: block; margin-bottom: 8px; color: var(--cyan); font-size: 0.9rem; font-weight: bold; }
-        input[type="text"], input[type="number"], textarea, input[type="file"] {
+        input[type="text"], input[type="number"], textarea, input[type="file"], select {
             width: 100%;
             padding: 12px;
             margin-bottom: 20px;
@@ -49,7 +49,7 @@
             box-sizing: border-box;
             font-family: inherit;
         }
-        input:focus, textarea:focus { border-color: var(--cyan); outline: none; }
+        input:focus, textarea:focus, select:focus { border-color: var(--cyan); outline: none; }
         .btn {
             width: 100%;
             padding: 15px;
@@ -114,10 +114,11 @@
                         <?php 
                             $status = old('status', $product['status'] ?? 'in_stock');
                             $options = [
-                                'in_stock'       => 'In Stock',
-                                'out_of_stock'   => 'Out of Stock',
-                                'pre_order'      => 'Pre-Order',
-                                'available_order'=> 'Available to Order'
+                                'in_stock'           => 'In Stock',
+                                'out_of_stock'       => 'Out of Stock',
+                                'pre_order'          => 'Pre-Order',
+                                'special_pre_order'  => 'Special Pre-Order Price',
+                                'available_order'    => 'Available to Order'
                             ];
                         ?>
                         <?php foreach($options as $val => $label): ?>
@@ -152,15 +153,10 @@
 
             <label>Cover Image</label>
             <?php if(isset($product['image']) && $product['image']): ?>
-                <ul class="nav-menu">
-                    <li class="nav-item"><a href="<?= site_url('admin/dashboard') ?>">Overview</a></li>
-                    <li class="nav-item"><a href="<?= site_url('admin/products') ?>" class="active">Products Management</a></li>
-                    <li class="nav-item"><a href="<?= site_url('admin/orders') ?>">Orders Management</a></li>
-                    <li class="nav-item"><a href="<?= site_url('admin/customers') ?>">Customers Management</a></li>
-                    <li class="nav-item"><a href="<?= site_url('admin/payment-settings') ?>">Payment Settings</a></li>
-                    <li class="nav-item"><a href="<?= site_url('admin/email-settings') ?>">Email Settings</a></li>
-                    <li class="nav-item"><a href="<?= site_url('shop') ?>" target="_blank">View Storefront</a></li>
-                </ul>
+                <div class="current-img">
+                    <img src="<?= base_url($product['image']) ?>" alt="Current Image">
+                    <p style="color: #777; font-size: 0.85rem;">Current Image</p>
+                </div>
             <?php endif; ?>
             <?php if(isset($product) && !$product['image']): ?>
                 <small style="display:block; margin-top:-15px; margin-bottom:15px; color: #555;">(Optional if updating text only)</small>

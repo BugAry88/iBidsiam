@@ -84,8 +84,10 @@
                                     <span class="status-badge status-cancelled">Out of Stock</span>
                                 <?php elseif($product['status'] == 'pre_order'): ?>
                                     <span class="status-badge status-pending">Pre-Order</span>
+                                <?php elseif($product['status'] == 'special_pre_order'): ?>
+                                    <span class="status-badge" style="background: #ff6b6b; color: white;">Special Pre-Order Price</span>
                                 <?php else: ?>
-                                    <span class="status-badge status-shipped">Order</span>
+                                    <span class="status-badge status-shipped">Available For Order</span>
                                 <?php endif; ?>
                             </td>
                             <td><?= esc($product['genre'] ?? '-') ?></td>

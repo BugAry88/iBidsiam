@@ -1750,6 +1750,12 @@
                                     } elseif ($product['status'] == 'pre_order') {
                                         $statusClass = 'status-pre-premium';
                                         $statusText = 'Pre-Order';
+                                    } elseif ($product['status'] == 'special_pre_order') {
+                                        $statusClass = 'status-special-premium';
+                                        $statusText = 'Special Pre-Order Price';
+                                    } elseif ($product['status'] == 'available_order') {
+                                        $statusClass = 'status-available-premium';
+                                        $statusText = 'Available For Order';
                                     }
                                     ?>
                                     <span class="stock-status-premium <?= $statusClass ?>"><?= $statusText ?></span>
@@ -1760,6 +1766,10 @@
                                         <button class="btn-add-cart-premium" disabled>Sold Out</button>
                                     <?php elseif ($product['status'] == 'pre_order'): ?>
                                         <button class="btn-add-cart-premium" onclick="addToCart(<?= $product['id'] ?>)">Pre-Order</button>
+                                    <?php elseif ($product['status'] == 'special_pre_order'): ?>
+                                        <button class="btn-add-cart-premium" onclick="addToCart(<?= $product['id'] ?>)" style="background: linear-gradient(135deg, #ff6b6b, #ff8e53);">Special Pre-Order Price</button>
+                                    <?php elseif ($product['status'] == 'available_order'): ?>
+                                        <button class="btn-add-cart-premium" onclick="addToCart(<?= $product['id'] ?>)">Available For Order</button>
                                     <?php else: ?>
                                         <button class="btn-add-cart-premium" onclick="addToCart(<?= $product['id'] ?>)">Add to Cart</button>
                                     <?php endif; ?>

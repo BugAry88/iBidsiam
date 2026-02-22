@@ -582,6 +582,12 @@
                 } elseif ($product['status'] == 'pre_order') {
                     $statusClass = 'pre-order';
                     $statusText = 'Pre-Order';
+                } elseif ($product['status'] == 'special_pre_order') {
+                    $statusClass = 'special-pre-order';
+                    $statusText = 'Special Pre-Order Price';
+                } elseif ($product['status'] == 'available_order') {
+                    $statusClass = 'available-order';
+                    $statusText = 'Available For Order';
                 }
                 ?>
                 <div class="pd-status <?= $statusClass ?>"><?= $statusText ?></div>
@@ -633,6 +639,10 @@
                     <button class="pd-add-cart" disabled>Sold Out</button>
                 <?php elseif ($product['status'] == 'pre_order'): ?>
                     <button class="pd-add-cart" onclick="addToCart()">Pre-Order Now</button>
+                <?php elseif ($product['status'] == 'special_pre_order'): ?>
+                    <button class="pd-add-cart" onclick="addToCart()" style="background: linear-gradient(135deg, #ff6b6b, #ff8e53);">Special Pre-Order Price</button>
+                <?php elseif ($product['status'] == 'available_order'): ?>
+                    <button class="pd-add-cart" onclick="addToCart()">Available For Order</button>
                 <?php else: ?>
                     <button class="pd-add-cart" onclick="addToCart()">Add to Cart</button>
                 <?php endif; ?>
